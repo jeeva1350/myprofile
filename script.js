@@ -249,6 +249,8 @@ function toggleTheme() {
 
 function updateThemeIcon() {
     const isDark = html.classList.contains('dark');
+    
+    // Update header theme toggle
     const sunIcon = themeToggle ? themeToggle.querySelector('.ri-sun-line') : null;
     const moonIcon = themeToggle ? themeToggle.querySelector('.ri-moon-line') : null;
     
@@ -261,11 +263,34 @@ function updateThemeIcon() {
             moonIcon.style.display = 'inline-block';
         }
     }
+    
+    // Update floating theme toggle
+    const floatingBtn = document.getElementById('floating-theme-btn');
+    if (floatingBtn) {
+        const darkIcon = floatingBtn.querySelector('.theme-icon-dark');
+        const lightIcon = floatingBtn.querySelector('.theme-icon-light');
+        
+        if (darkIcon && lightIcon) {
+            if (isDark) {
+                darkIcon.style.display = 'inline-block';
+                lightIcon.style.display = 'none';
+            } else {
+                darkIcon.style.display = 'none';
+                lightIcon.style.display = 'inline-block';
+            }
+        }
+    }
 }
 
 if (themeToggle) {
     themeToggle.addEventListener('click', toggleTheme);
     initTheme();
+}
+
+// Floating theme toggle button
+const floatingThemeBtn = document.getElementById('floating-theme-btn');
+if (floatingThemeBtn) {
+    floatingThemeBtn.addEventListener('click', toggleTheme);
 }
 
 // ========================================
@@ -361,11 +386,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const SERVICE_ID = 'service_102wzbf';
     const TEMPLATE_ID = 'template_vrrbeul';
 
+    let emailJSReady = false;
+
     if (typeof emailjs !== 'undefined') {
-        emailjs.init(PUBLIC_KEY);
-        console.log('EmailJS initialized');
+        try {
+            emailjs.init(PUBLIC_KEY);
+            emailJSReady = true;
+            console.log('EmailJS initialized successfully');
+        } catch (e) {
+            console.error('EmailJS init error:', e);
+        }
     } else {
-        console.error('EmailJS SDK not loaded');
+        console.warn('EmailJS SDK not loaded - will use formsubmit.co fallback');
     }
 
     window.emailJSConfig = { SERVICE_ID, TEMPLATE_ID, PUBLIC_KEY };
@@ -384,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show loading state
         submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Sending...';
         submitBtn.disabled = true;
-        
+
         const formData = {
             from_name: this.querySelector('input[name="Name"]').value,
             from_email: this.querySelector('input[name="Email"]').value,
@@ -393,11 +425,17 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         try {
-            await emailjs.send(
-                window.emailJSConfig.SERVICE_ID,
-                window.emailJSConfig.TEMPLATE_ID,
-                formData
-            );
+            // Try EmailJS first
+            if (emailJSReady && typeof emailjs !== 'undefined') {
+                await emailjs.send(
+                    window.emailJSConfig.SERVICE_ID,
+                    window.emailJSConfig.TEMPLATE_ID,
+                    formData
+                );
+                console.log('Email sent via EmailJS');
+            } else {
+                throw new Error('EmailJS not available');
+            }
             
             submitBtn.innerHTML = '<i class="ri-check-line"></i> Sent!';
             submitBtn.classList.add('bg-green-600');
@@ -410,15 +448,41 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 3000);
             
         } catch (error) {
-            console.error('Email sending failed:', error);
-            submitBtn.innerHTML = '<i class="ri-error-warning-line"></i> Failed';
-            submitBtn.classList.add('bg-red-600');
+            console.warn('EmailJS failed, trying formsubmit.co:', error);
             
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('bg-red-600');
-            }, 3000);
+            // Fallback to formsubmit.co
+            try {
+                const formSubmitUrl = 'https://formsubmit.co/jeeva13052001@gmail.com';
+                const formDataEncoded = new URLSearchParams(formData).toString();
+                
+                await fetch(formSubmitUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formDataEncoded
+                });
+                
+                console.log('Email sent via formsubmit.co');
+                submitBtn.innerHTML = '<i class="ri-check-line"></i> Sent!';
+                submitBtn.classList.add('bg-green-600');
+                this.reset();
+                
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('bg-green-600');
+                }, 3000);
+                
+            } catch (formError) {
+                console.error('Formsubmit also failed:', formError);
+                submitBtn.innerHTML = '<i class="ri-error-warning-line"></i> Failed';
+                submitBtn.classList.add('bg-red-600');
+                
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('bg-red-600');
+                }, 3000);
+            }
         }
     });
     }

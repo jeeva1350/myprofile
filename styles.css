@@ -947,16 +947,40 @@ html:not(.dark) #contact .text-white {
     color: #18181b !important;
 }
 
+/* Form inputs - ensure visibility in both modes */
+html.dark #contact input,
+html.dark #contact textarea {
+    color: #ffffff !important;
+    background-color: #18181b !important;
+    border-color: #3f3f46 !important;
+}
+
+html.dark #contact input::placeholder,
+html.dark #contact textarea::placeholder {
+    color: #a1a1aa !important;
+}
+
+html.dark #contact label {
+    color: #d4d4d8 !important;
+}
+
+/* Form inputs light mode */
 html:not(.dark) #contact input,
 html:not(.dark) #contact textarea {
     background-color: #ffffff !important;
     border-color: #d4d4d8 !important;
     color: #18181b !important;
+    -webkit-text-fill-color: #18181b !important;
 }
 
 html:not(.dark) #contact input::placeholder,
 html:not(.dark) #contact textarea::placeholder {
     color: #71717a !important;
+    -webkit-text-fill-color: #71717a !important;
+}
+
+html:not(.dark) #contact label {
+    color: #18181b !important;
 }
 
 /* Header light mode */
@@ -1898,3 +1922,102 @@ html:not(.dark) #mobile-menu .text-zinc-400 {
   z-index: 9998 !important;
 }
 
+
+/* ========================================
+   FLOATING THEME TOGGLE
+   ======================================== */
+
+.floating-theme-toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  animation: floatIn 0.5s ease-out;
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.floating-theme-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+  transition: all 0.3s ease;
+}
+
+.floating-theme-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(124, 58, 237, 0.5);
+}
+
+.floating-theme-btn i {
+  font-size: 22px;
+  color: white;
+}
+
+.floating-theme-btn .theme-icon-dark {
+  display: inline-block;
+}
+
+.floating-theme-btn .theme-icon-light {
+  display: none;
+}
+
+/* Light mode - show moon icon */
+html:not(.dark) .floating-theme-btn .theme-icon-dark {
+  display: none;
+}
+
+html:not(.dark) .floating-theme-btn .theme-icon-light {
+  display: inline-block;
+}
+
+/* Light mode button style */
+html:not(.dark) .floating-theme-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+}
+
+html:not(.dark) .floating-theme-btn:hover {
+  box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
+}
+
+/* Hide original header theme toggle when floating is visible */
+@media (min-width: 769px) {
+  #theme-toggle {
+    display: none !important;
+  }
+}
+
+/* Show floating toggle on desktop, hide on very small screens */
+@media (max-width: 480px) {
+  .floating-theme-toggle {
+    bottom: 16px;
+    right: 16px;
+  }
+  
+  .floating-theme-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+  }
+  
+  .floating-theme-btn i {
+    font-size: 18px;
+  }
+}
