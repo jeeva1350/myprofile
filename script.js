@@ -12,10 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
             offset: 100
         });
     }
+    
+    // Set current year in copyright
+    const yearElement = document.getElementById('current-year');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
 });
 
 // ========================================
-// Aurora Canvas Animation
+// Professional Gradient Mesh Background Animation
 // ========================================
 (function() {
     const canvas = document.getElementById('auroraCanvas');
@@ -31,35 +37,131 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', resize);
 
     let time = 0;
-    const colors = ['#7c3aed', '#4f46e5', '#06b6d4'];
+    
+    // Gradient mesh points
+    const points = [];
+    const numPoints = 8;
+    
+    for (let i = 0; i < numPoints; i++) {
+        points.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            radius: Math.random() * 300 + 200,
+            hue: Math.random() * 40 + 240 // purple to cyan range
+        });
+    }
+    
+    // Floating particles
+    const particles = [];
+    const numParticles = 40;
+    
+    for (let i = 0; i < numParticles; i++) {
+        particles.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            size: Math.random() * 2 + 0.5,
+            speed: Math.random() * 0.2 + 0.1,
+            opacity: Math.random() * 0.4 + 0.1
+        });
+    }
 
-    function noise(x, y) {
-        return Math.sin(x * 0.01 + time * 0.001) * Math.cos(y * 0.01 + time * 0.0005) * 0.5;
+    function drawGradientMesh() {
+        const isDark = document.documentElement.classList.contains('dark');
+        
+        // Create gradient mesh effect
+        points.forEach((point, i) => {
+            // Update position
+            point.x += point.vx;
+            point.y += point.vy;
+            
+            // Bounce off edges
+            if (point.x < -point.radius) point.x = canvas.width + point.radius;
+            if (point.x > canvas.width + point.radius) point.x = -point.radius;
+            if (point.y < -point.radius) point.y = canvas.height + point.radius;
+            if (point.y > canvas.height + point.radius) point.y = -point.radius;
+            
+            // Create radial gradient for each point
+            const gradient = ctx.createRadialGradient(
+                point.x, point.y, 0,
+                point.x, point.y, point.radius
+            );
+            
+            if (isDark) {
+                // Dark mode - more saturated colors
+                const hue1 = point.hue;
+                const hue2 = (point.hue + 30) % 360;
+                gradient.addColorStop(0, `hsla(${hue1}, 70%, 50%, 0.15)`);
+                gradient.addColorStop(0.5, `hsla(${hue2}, 60%, 40%, 0.08)`);
+                gradient.addColorStop(1, 'transparent');
+            } else {
+                // Light mode - softer pastel
+                const hue1 = point.hue;
+                const hue2 = (point.hue + 30) % 360;
+                gradient.addColorStop(0, `hsla(${hue1}, 70%, 65%, 0.12)`);
+                gradient.addColorStop(0.5, `hsla(${hue2}, 60%, 55%, 0.06)`);
+                gradient.addColorStop(1, 'transparent');
+            }
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        });
+    }
+
+    function drawParticles() {
+        const isDark = document.documentElement.classList.contains('dark');
+        
+        particles.forEach(p => {
+            p.y -= p.speed;
+            p.x += Math.sin(time * 0.01 + p.y * 0.01) * 0.2;
+            
+            if (p.y < 0) {
+                p.y = canvas.height;
+                p.x = Math.random() * canvas.width;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = isDark ? `rgba(139, 92, 246, ${p.opacity})` : `rgba(99, 102, 241, ${p.opacity * 0.5})`;
+            ctx.fill();
+        });
+    }
+
+    function drawGlow() {
+        const isDark = document.documentElement.classList.contains('dark');
+        
+        // Subtle center glow
+        const glowGradient = ctx.createRadialGradient(
+            canvas.width / 2, canvas.height / 2, 0,
+            canvas.width / 2, canvas.height / 2, canvas.width * 0.5
+        );
+        
+        if (isDark) {
+            glowGradient.addColorStop(0, 'rgba(139, 92, 246, 0.08)');
+            glowGradient.addColorStop(0.5, 'rgba(99, 102, 241, 0.04)');
+            glowGradient.addColorStop(1, 'transparent');
+        } else {
+            glowGradient.addColorStop(0, 'rgba(139, 92, 246, 0.05)');
+            glowGradient.addColorStop(0.5, 'rgba(99, 102, 241, 0.02)');
+            glowGradient.addColorStop(1, 'transparent');
+        }
+        
+        ctx.fillStyle = glowGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, colors[0]);
-        gradient.addColorStop(0.5, colors[1]);
-        gradient.addColorStop(1, colors[2]);
-
-        for (let y = 0; y < canvas.height; y += 4) {
-            for (let x = 0; x < canvas.width; x += 4) {
-                const n = noise(x, y);
-                const intensity = (Math.sin(y * 0.005 + time * 0.002 + n * 3) + 1) * 0.5;
-                if (intensity > 0.3) {
-                    ctx.fillStyle = gradient;
-                    ctx.globalAlpha = intensity * 0.12;
-                    ctx.fillRect(x, y, 4, 4);
-                }
-            }
-        }
+        drawGradientMesh();
+        drawParticles();
+        drawGlow();
         
         time++;
         requestAnimationFrame(draw);
     }
+    
     draw();
 })();
 
@@ -84,24 +186,42 @@ const mobileMenuBtn = document.getElementById('mobile-menu-btn');
 const mobileMenu = document.getElementById('mobile-menu');
 const closeMenuBtn = document.getElementById('close-menu-btn');
 
-if (mobileMenuBtn && mobileMenu) {
-    mobileMenuBtn.addEventListener('click', () => {
+function openMobileMenu() {
+    if (mobileMenu) {
         mobileMenu.classList.remove('hidden');
-    });
+        const isDark = document.documentElement.classList.contains('dark');
+        const bgColor = isDark ? '#000000' : '#a7bcd1';
+        mobileMenu.setAttribute('style', 'display: flex !important; flex-direction: column; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: ' + bgColor + '; z-index: 99999;');
+        document.body.style.overflow = 'hidden';
+        console.log('Menu opened');
+    }
 }
 
-if (closeMenuBtn && mobileMenu) {
-    closeMenuBtn.addEventListener('click', () => {
+function closeMobileMenu() {
+    if (mobileMenu) {
         mobileMenu.classList.add('hidden');
-    });
+        mobileMenu.setAttribute('style', 'display: none !important;');
+        document.body.style.overflow = '';
+        console.log('Menu closed');
+    }
 }
 
-if (mobileMenu) {
-    mobileMenu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.add('hidden');
-        });
-    });
+if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', openMobileMenu);
+}
+
+if (closeMenuBtn) {
+    closeMenuBtn.addEventListener('click', closeMobileMenu);
+}
+
+// Make functions globally available
+window.openMobileMenu = openMobileMenu;
+window.closeMobileMenu = closeMobileMenu;
+
+// Mobile theme toggle
+const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+if (mobileThemeToggle) {
+    mobileThemeToggle.addEventListener('click', toggleTheme);
 }
 
 // ========================================
@@ -233,26 +353,76 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // ========================================
-// Form Validation
+// EmailJS Configuration & Form Handler
 // ========================================
-const contactForm = document.querySelector('form[action*="formsubmit"]');
-if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize EmailJS
+    const PUBLIC_KEY = 't_TB34ENak9AyaJZE';
+    const SERVICE_ID = 'service_102wzbf';
+    const TEMPLATE_ID = 'template_vrrbeul';
+
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(PUBLIC_KEY);
+        console.log('EmailJS initialized');
+    } else {
+        console.error('EmailJS SDK not loaded');
+    }
+
+    window.emailJSConfig = { SERVICE_ID, TEMPLATE_ID, PUBLIC_KEY };
+
+    // Form submission handler
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        console.log('Contact form found');
+        
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+        
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         
-        submitBtn.innerHTML = '<i class="ri-check-line"></i> Sent!';
+        // Show loading state
+        submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Sending...';
         submitBtn.disabled = true;
-        submitBtn.classList.add('bg-green-600');
         
-        setTimeout(() => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('bg-green-600');
-            contactForm.reset();
-        }, 3000);
+        const formData = {
+            from_name: this.querySelector('input[name="Name"]').value,
+            from_email: this.querySelector('input[name="Email"]').value,
+            subject: this.querySelector('input[name="Subject"]').value || 'New Portfolio Contact',
+            message: this.querySelector('textarea[name="message"]').value
+        };
+
+        try {
+            await emailjs.send(
+                window.emailJSConfig.SERVICE_ID,
+                window.emailJSConfig.TEMPLATE_ID,
+                formData
+            );
+            
+            submitBtn.innerHTML = '<i class="ri-check-line"></i> Sent!';
+            submitBtn.classList.add('bg-green-600');
+            this.reset();
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('bg-green-600');
+            }, 3000);
+            
+        } catch (error) {
+            console.error('Email sending failed:', error);
+            submitBtn.innerHTML = '<i class="ri-error-warning-line"></i> Failed';
+            submitBtn.classList.add('bg-red-600');
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('bg-red-600');
+            }, 3000);
+        }
     });
-}
+    }
+});
 
 // ========================================
 // Intersection Observer for AOS-like animations

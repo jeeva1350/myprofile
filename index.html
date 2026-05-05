@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.3.1/dist/email.min.js"></script>
 </head>
 <body class="font-['Space_Grotesk']">
     <div class="aurora-bg">
@@ -21,7 +22,7 @@
     </div>
 
     <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="main-header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
             <nav class="flex items-center justify-between py-5 md:py-6">
                 <a href="#home" class="flex items-center gap-2 group">
                     <div class="w-10 h-10 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-sm group-hover:scale-110 transition-transform">JR</div>
@@ -39,20 +40,72 @@
                 </ul>
             </nav>
         </div>
-        <div class="md:hidden fixed inset-0 bg-zinc-950/95 backdrop-blur-xl z-40 hidden" id="mobile-menu">
-            <div class="flex flex-col items-center justify-center h-full gap-8">
-                <a href="#home" class="text-2xl text-white font-semibold">Home</a>
-                <a href="#about" class="text-2xl text-white font-semibold">About</a>
-                <a href="#skills" class="text-2xl text-white font-semibold">Skills</a>
-                <a href="#experience" class="text-2xl text-white font-semibold">Experience</a>
-                <a href="#project" class="text-2xl text-white font-semibold">Projects</a>
-                <a href="#contact" class="text-2xl text-violet-400 font-semibold">Contact</a>
-                <button class="absolute top-6 right-6 text-white" id="close-menu-btn"><i class="ri-close-line text-3xl"></i></button>
+        <div class="md:hidden fixed inset-0 z-50 hidden" id="mobile-menu" style="background: #000; width: 100%; height: 100%;">
+            <div style="display: flex; flex-direction: column; height: 100%;">
+                <!-- Header -->
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid #27272a;">
+                    <a href="#home" onclick="closeMobileMenu()" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #7c3aed, #6366f1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">JR</div>
+                        <span style="color: white; font-size: 18px; font-weight: 600;">Jeeva R</span>
+                    </a>
+                    <button onclick="closeMobileMenu()" style="background: none; border: none; color: #a1a1aa; padding: 8px; cursor: pointer;">
+                        <i class="ri-close-line" style="font-size: 24px;"></i>
+                    </button>
+                </div>
+                
+                <!-- Navigation Links -->
+                <nav style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <a href="#home" onclick="closeMobileMenu()" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: #d4d4d8; text-decoration: none; font-size: 18px; transition: all 0.2s;">
+                            <i class="ri-home-4-line" style="font-size: 22px;"></i>
+                            <span>Home</span>
+                        </a>
+                        <a href="#about" onclick="closeMobileMenu()" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: #d4d4d8; text-decoration: none; font-size: 18px; transition: all 0.2s;">
+                            <i class="ri-user-3-line" style="font-size: 22px;"></i>
+                            <span>About</span>
+                        </a>
+                        <a href="#skills" onclick="closeMobileMenu()" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: #d4d4d8; text-decoration: none; font-size: 18px; transition: all 0.2s;">
+                            <i class="ri-code-line" style="font-size: 22px;"></i>
+                            <span>Skills</span>
+                        </a>
+                        <a href="#experience" onclick="closeMobileMenu()" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: #d4d4d8; text-decoration: none; font-size: 18px; transition: all 0.2s;">
+                            <i class="ri-briefcase-3-line" style="font-size: 22px;"></i>
+                            <span>Experience</span>
+                        </a>
+                        <a href="#project" onclick="closeMobileMenu()" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: #d4d4d8; text-decoration: none; font-size: 18px; transition: all 0.2s;">
+                            <i class="ri-folder-3-line" style="font-size: 22px;"></i>
+                            <span>Projects</span>
+                        </a>
+                        <a href="#contact" onclick="closeMobileMenu()" style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; color: #a78bfa; text-decoration: none; font-size: 18px; transition: all 0.2s;">
+                            <i class="ri-message-3-line" style="font-size: 22px;"></i>
+                            <span>Contact</span>
+                        </a>
+                    </div>
+                </nav>
+                
+                <!-- Bottom Actions -->
+                <div style="padding: 24px; border-top: 1px solid #27272a;">
+                    <a href="#contact" onclick="closeMobileMenu()" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; background: linear-gradient(135deg, #7c3aed, #6366f1); border-radius: 12px; color: white; font-size: 16px; font-weight: 600; text-decoration: none;">
+                        <span>Let's Talk</span>
+                        <i class="ri-arrow-right-up-line" style="font-size: 18px;"></i>
+                    </a>
+                    <div style="display: flex; justify-content: center; gap: 16px; margin-top: 16px;">
+                        <button id="mobile-theme-toggle" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(63,63,70,0.5); border: 1px solid rgba(63,63,70,0.8); color: #a1a1aa; cursor: pointer;">
+                            <i class="ri-sun-line" style="font-size: 20px;"></i>
+                        </button>
+                        <a href="https://github.com/jeeva1350/" target="_blank" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(63,63,70,0.5); border: 1px solid rgba(63,63,70,0.8); color: #a1a1aa; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                            <i class="ri-github-fill" style="font-size: 20px;"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/jeeva-r-2b74b5264" target="_blank" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(63,63,70,0.5); border: 1px solid rgba(63,63,70,0.8); color: #a1a1aa; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                            <i class="ri-linkedin-fill" style="font-size: 20px;"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28">
+    <main class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-20 md:pt-28">
         <!-- Hero Section -->
         <div class="hero grid md:grid-cols-2 items-center xl:gap-0 gap-12 grid-cols-1" id="home">
             <div data-aos="fade-up" data-aos-duration="1000">
@@ -62,7 +115,7 @@
                         Available for Work
                     </span>
                 </div>
-                <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight">
                     <span class="text-white">Hi, I'm </span>
                     <span class="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text ">Jeeva R</span>
                 </h1>
@@ -70,30 +123,30 @@
                     <span class="text-xl md:text-2xl text-gray-300 font-light">I'm a</span>
                     <div class="typewriter-container">
                         <div class="typewriter-words">
-                            <span class="typewriter-word text-xl md:text-2xl text-violet-400 font-semibold">Senior Backend Developer</span>
+                            <span class="typewriter-word text-xl md:text-2xl text-violet-400 font-semibold">Backend Developer</span>
                             <span class="typewriter-word text-xl md:text-2xl text-violet-400 font-semibold">Full Stack Developer</span>
                             <span class="typewriter-word text-xl md:text-2xl text-violet-400 font-semibold">PHP Expert</span>
-                            <span class="typewriter-word text-xl md:text-2xl text-violet-400 font-semibold">Tech Lead</span>
+                           
                         </div>
                     </div>
                 </div>
                 <p class="text-base md:text-lg leading-relaxed mb-8 text-gray-400 max-w-xl">
                     Senior Backend Developer with <strong class="text-white">3+ years</strong> of expertise in PHP, Laravel, and building scalable e-commerce solutions. Currently leading backend development at Primasoft Technologies, Dubai.
                 </p>
-                <div class="flex items-center sm:gap-4 gap-3 flex-wrap">
-                    <a href="#contact" class="group relative px-8 py-4 bg-violet-600 hover:bg-violet-700 rounded-full font-semibold text-white overflow-hidden transition-all">
+                <div class="flex flex-wrap justify-center sm:justify-start sm:gap-4 gap-3">
+                    <a href="#contact" class="group relative px-6 sm:px-8 py-3 sm:py-4 bg-violet-600 hover:bg-violet-700 rounded-full font-semibold text-white overflow-hidden transition-all">
                         <span class="relative z-10 flex items-center gap-2">
                             Let's Talk
                             <i class="ri-arrow-right-line group-hover:translate-x-1 transition-transform"></i>
                         </span>
                     </a>
-                    <a href="#project" class="px-8 py-4 bg-zinc-800/80 border border-zinc-700 hover:border-violet-500/50 rounded-full font-semibold text-white transition-all hover:bg-zinc-700/80">
+                    <a href="#project" class="px-6 sm:px-8 py-3 sm:py-4 bg-zinc-800/80 border border-zinc-700 hover:border-violet-500/50 rounded-full font-semibold text-white transition-all hover:bg-zinc-700/80">
                         View Work
                     </a>
-                    <a href="https://github.com/jeeva1350/" target="_blank" class="px-4 py-4 bg-zinc-800/80 border border-zinc-700 hover:border-gray-600 rounded-full text-white transition-all hover:bg-zinc-700/80 flex items-center justify-center">
+                    <a href="https://github.com/jeeva1350/" target="_blank" class="px-3 sm:px-4 py-3 sm:py-4 bg-zinc-800/80 border border-zinc-700 hover:border-gray-600 rounded-full text-white transition-all hover:bg-zinc-700/80 flex items-center justify-center">
                         <i class="ri-github-fill text-xl"></i>
                     </a>
-                    <a href="https://www.linkedin.com/in/jeeva-r-2b74b5264?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" class="px-4 py-4 bg-zinc-800/80 border border-zinc-700 hover:border-blue-500/50 rounded-full text-white transition-all hover:bg-zinc-700/80 flex items-center justify-center">
+                    <a href="https://www.linkedin.com/in/jeeva-r-2b74b5264?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" class="px-3 sm:px-4 py-3 sm:py-4 bg-zinc-800/80 border border-zinc-700 hover:border-blue-500/50 rounded-full text-white transition-all hover:bg-zinc-700/80 flex items-center justify-center">
                         <i class="ri-linkedin-fill text-xl"></i>
                     </a>
                 </div>
@@ -163,7 +216,7 @@
                             
                             <!-- Profile image -->
                             <div class="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-zinc-800 shadow-2xl hover:border-violet-500/50 transition-all duration-500 group">
-                                <img src="./assets/jeeva1.jpeg" alt="Jeeva R" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img src="./assets/jeeva2.jpeg" alt="Jeeva R" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                             </div>
                             
@@ -807,8 +860,7 @@
                     </div>
                     
                     <div>
-                        <form action="https://formsubmit.co/jeeva13052001@gmail.com" method="POST" class="space-y-4" autocomplete="off" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="500">
-                            <input type="hidden" name="_subject" value="New Portfolio Contact">
+                        <form id="contact-form" class="space-y-4" autocomplete="off">
                             <div class="grid sm:grid-cols-2 gap-4">
                                 <div class="space-y-2">
                                     <label class="font-semibold text-gray-300">Your Name</label>
@@ -896,7 +948,7 @@
 
             <div class="footer-bottom">
                 <div class="copyright">
-                    <p>&copy; 2025 Jeeva R. All Rights Reserved.</p>
+                    <p>&copy; <span id="current-year"></span> Jeeva R. All Rights Reserved.</p>
                 </div>
                 <div class="footer-badge">
                     <span class="badge-item"><i class="ri-code-line"></i> Built with passion</span>
